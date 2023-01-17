@@ -2,17 +2,28 @@ import React, { useEffect, useState } from "react";
 import QuestionItem from "./QuestionItem";
 
 function QuestionList() {
-  const [items, setItems] = useState([])
+  const [questions, setQuestions] = useState([]);
 
   useEffect(() => {
     fetch("http://localhost:4000/questions")
-      .then((res) => res.json())
-      // .then((dt)=>console.log(dt))
-      .then((items) => setItems(()=>items));
+      .then((r) => r.json())
+      .then((questions) => {
+        setQuestions(questions);
+      });
   }, []);
 
- 
-  function handleNewAnswer(id, correctIndex) {
+  function handleDeleteClick(id) {
+    fetch(`http://localhost:4000/questions/${id}`, {
+      method: "DELETE",
+    })
+      .then((r) => r.json())
+      .then(() => {
+        const updatedQuestions = questions.filter((q) => q.id !== id);
+        setQuestions(updatedQuestions);
+      });
+  }
+
+  function handleAnswerChange(id, correctIndex) {
     fetch(`http://localhost:4000/questions/${id}`, {
       method: "PATCH",
       headers: {
@@ -20,41 +31,29 @@ function QuestionList() {
       },
       body: JSON.stringify({ correctIndex }),
     })
-      .then((res) => res.json())
+      .then((r) => r.json())
       .then((updatedQuestion) => {
-        const updatedQuestions = items.map((item) => {
-          if (item.id === updatedQuestion.id) return updatedQuestion;
-          return item;
+        const updatedQuestions = questions.map((q) => {
+          if (q.id === updatedQuestion.id) return updatedQuestion;
+          return q;
         });
-        setItems(updatedQuestions);
+        setQuestions(updatedQuestions);
       });
   }
 
-
-  function handleAnswerDelete(id) {
-    fetch(`http://localhost:4000/questions/${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then(() => {
-        const updatedQuestions = items.filter((item) => item.id !== id);
-        setItems(updatedQuestions);
-      });
-  }
-
-  const itemlist = items.map((item)=>{
-    <QuestionItem 
-    key={item.id}
-    question={item}
-    onAnswerChange={handleNewAnswer}
-    onAnwerDelete={handleAnswerDelete}
+  const questionItems = questions.map((q) => (
+    <QuestionItem
+      key={q.id}
+      question={q}
+      onDeleteClick={handleDeleteClick}
+      onAnswerChange={handleAnswerChange}
     />
-  })
+  ));
 
   return (
     <section>
       <h1>Quiz Questions</h1>
-      <ul>{itemlist}</ul>
+      <ul>{questionItems}</ul>
     </section>
   );
 }
