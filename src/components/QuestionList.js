@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import QuestionItem from "./QuestionItem";
 
-function QuestionList({itemsToDisplay}) {
+function QuestionList() {
   const [items, setItems] = useState([])
 
   useEffect(() => {
@@ -47,7 +47,7 @@ function QuestionList({itemsToDisplay}) {
     key={item.id}
     question={item}
     onAnswerChange={handleNewAnswer}
-    onAnwerDeleteClick={handleAnswerDelete}
+    onAnwerDelete={handleAnswerDelete}
     />
   })
 
