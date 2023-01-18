@@ -13,6 +13,17 @@ function QuestionList() {
   }, []);
 
  
+  function handleAnswerDelete(id) {
+    fetch(`http://localhost:4000/questions/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then(() => {
+        const updatedQuestions = items.filter((item) => item.id !== id);
+        setItems(updatedQuestions);
+      });
+  }
+
   function handleNewAnswer(id, correctIndex) {
     fetch(`http://localhost:4000/questions/${id}`, {
       method: "PATCH",
@@ -31,17 +42,6 @@ function QuestionList() {
       });
   }
 
-
-  function handleAnswerDelete(id) {
-    fetch(`http://localhost:4000/questions/${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then(() => {
-        const updatedQuestions = items.filter((item) => item.id !== id);
-        setItems(updatedQuestions);
-      });
-  }
 
   const itemlist = items.map((item)=>{
    return <QuestionItem 
